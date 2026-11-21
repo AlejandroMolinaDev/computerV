@@ -1,16 +1,16 @@
-# MoodMeter 📊🎭 — Decodificador de Expresiones Faciales con IA
+# MoodMeter — Decodificador de Expresiones Faciales con IA
 
-**MoodMeter** es un playground interactivo y didáctico de visión por computadora diseñado para analizar emociones y microexpresiones faciales en tiempo real. 
+**MoodMeter** es un playground interactivo y didáctico de visión por computadora diseñado para analizar emociones y microexpresiones faciales en tiempo real.
 
-Impulsado por **FastAPI** en el backend y la librería de aprendizaje profundo **DeepFace**, el sistema traduce capturas de video en distribuciones de probabilidad emocional usando una **Red Neuronal Convolucional (CNN)** de última generación y despliega un dashboard con estética premium **Glassmorphism en Modo Oscuro** junto con explicaciones conceptuales integradas.
+Impulsado por **FastAPI** en el backend y la librería de aprendizaje profundo **DeepFace**, el sistema traduce capturas de video o fotografías locales en distribuciones de probabilidad emocional usando una **Red Neuronal Convolucional (CNN)**, y despliega un dashboard con estética **Glassmorphism en Modo Oscuro** junto con explicaciones conceptuales integradas.
 
 ---
 
-## 🧠 ¿Cómo Decodifica la IA las Emociones?
+## ¿Cómo Decodifica la IA las Emociones?
 
-A diferencia de las computadoras, los seres humanos percibimos expresiones faciales de forma instantánea y subconsciente. Para que una máquina replique esto, implementa un pipeline convolucional jerárquico paso a paso:
+A diferencia de las computadoras, los seres humanos percibimos expresiones faciales de forma instantánea y subconsciente. Para que una máquina replique esto, se implementa un pipeline convolucional jerárquico paso a paso:
 
-```
+```text
 [ Entrada: Webcam o Foto ]
           │
           ▼
@@ -41,57 +41,82 @@ $$\sigma(\mathbf{z})_i = \frac{e^{z_i}}{\sum_{j=1}^{K} e^{z_j}}$$
 
 ---
 
-## 📂 Estructura del Repositorio
+## Estructura del Repositorio
 
 La arquitectura del proyecto está optimizada para ser ligera, rápida y 100% libre de bases de datos persistentes:
 
-```
+```text
 computerV/
 ├── app/
 │   ├── main.py                 # Servidor FastAPI con pipeline de inferencia DeepFace
 │   └── templates/
-│       ├── index.html          # Frontend premium en HTML5 con Canvas y webcam
-│       └── style.css           # Estilos de alta gama (neón, vidrio esmerilado y animaciones)
-├── requirements.txt            # Dependencias del proyecto de Python
-└── start.sh                    # Script bash para instalación y arranque automático
+│       ├── index.html          # Frontend en HTML5 con Canvas y webcam
+│       └── style.css           # Estilos en modo oscuro, glassmorphism y animaciones
+├── requirements.txt            # Dependencias del proyecto en Python
+├── start.sh                    # Script bash opcional para arranque en macOS/Linux
+└── README.md                   # Documentación e instrucciones de ejecución
 ```
 
 ---
 
-## 🛠️ Instalación y Arranque Automático
+## Instalación y Ejecución
 
-Sigue estos sencillos pasos para instalar y poner en marcha **MoodMeter** en tu máquina local:
+Sigue estos pasos para instalar y ejecutar **MoodMeter** de forma local:
 
-### 1. Navegar al Directorio del Proyecto
+### 1. Clonar o descargar el repositorio
 ```bash
-cd /Users/leonelmendiola/computerV
+git clone [https://github.com/AlejandroMolinaDev/computerV.git](https://github.com/AlejandroMolinaDev/computerV.git)
+cd computerV
 ```
 
-### 2. Arrancar la Aplicación
-El sistema incluye un script automatizado `start.sh` que se encargará de crear el entorno virtual (`venv`), actualizar `pip`, instalar todas las dependencias y levantar el servidor FastAPI:
+### 2. Crear y activar el entorno virtual
 ```bash
-./start.sh
+python -m venv venv
 ```
 
-### 3. Abrir el Navegador
-Una vez que el servidor reporte estar listo, abre tu navegador en:
-👉 **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
+* **Windows (PowerShell):**
+  ```powershell
+  .\venv\Scripts\activate
+  ```
+* **macOS / Linux:**
+  ```bash
+  source venv/bin/activate
+  ```
 
-> 💡 **Nota de Primera Ejecución**: La primera vez que presiones "Escanear Rostro", DeepFace descargará automáticamente los pesos preentrenados del clasificador de emociones de Keras (~20MB). Este proceso se realiza una sola vez de forma interna y tardará solo unos segundos según tu velocidad de internet.
+### 3. Instalar dependencias
+```bash
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+```
+
+### 4. Iniciar el servidor FastAPI
+```bash
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+*(En macOS o Linux también puedes ejecutar `./start.sh` para automatizar la creación del entorno, instalación y arranque).*
+
+### 5. Abrir la aplicación en el navegador
+Una vez que la terminal muestre `Application startup complete`, abre tu navegador en:
+
+**[http://127.0.0.1:8000](http://127.0.0.1:8000)**
+
+> **Primera ejecución:** La primera vez que presiones "Escanear Rostro", DeepFace descargará automáticamente los pesos preentrenados del clasificador de emociones (~20 MB). Este proceso se realiza una sola vez de forma interna y tardará solo unos segundos según tu velocidad de internet.
+
+Para detener el servidor, presiona `Ctrl + C` en la terminal.
 
 ---
 
-## 💻 Características del Dashboard
+## Características del Dashboard
 
-* **Captura Multidispositivo**: Si cuentas con cámara web activa, la rejilla láser cibernética escaneará tu rostro en vivo. Si no posees cámara web, haz clic en **Archivo** para subir cualquier fotografía local.
-* **Mira Láser Flotante**: Al completar el escaneo, verás un recuadro cibernético dashed de color cian dibujado exactamente sobre las coordenadas físicas de tu rostro.
-* **Gauges de Distribución**: Muestra barras neón de colores que representan el peso asignado por la red a cada emoción en tiempo real.
-* **Mood Timeline (Línea de Tiempo)**: Un gráfico dinámico hecho con HTML5 Canvas que conecta los puntos de tus escaneos secuenciales. La curva cambia de color dinámicamente según la emoción dominante registrada en cada paso, ilustrando tu transición emocional (ej. de enojo a alegría).
+* **Captura Multidispositivo:** Si cuentas con cámara web activa, el visor escaneará tu rostro en vivo. Si no tienes cámara web, haz clic en **Archivo** para subir cualquier fotografía local y presiona **Escanear Rostro**.
+* **Recuadro de Detección Facial:** Al completar el escaneo, se dibuja un recuadro sobre las coordenadas exactas del rostro detectado.
+* **Gauges de Distribución:** Muestra barras de progreso que representan el porcentaje asignado por la red a cada una de las 7 emociones básicas en tiempo real.
+* **Mood Timeline (Línea de Tiempo):** Un gráfico dinámico hecho con HTML5 Canvas que conecta los puntos de tus escaneos secuenciales e ilustra la transición emocional.
 
 ---
 
-## ⚡ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 * **FastAPI** — API de alta velocidad en Python.
-* **DeepFace** — Framework de análisis facial inmersivo.
+* **DeepFace** — Framework de análisis facial basado en redes neuronales.
 * **OpenCV** — Localización y procesamiento espacial del rostro.
-* **HTML5 / CSS3 / JavaScript (ES6)** — Frontend premium inmersivo sin dependencias pesadas.
+* **HTML5 / CSS3 / JavaScript (ES6)** — Interfaz web interactiva sin dependencias externas pesadas.

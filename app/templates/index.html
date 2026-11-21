@@ -132,7 +132,7 @@
                         <!-- Happy -->
                         <div class="gauge-row">
                             <div class="gauge-header">
-                                <span class="gauge-name"><span class="gauge-emoji">😃</span> Felicidad</span>
+                                <span class="gauge-name"><i class="fa-solid fa-face-smile gauge-emoji"></i> Felicidad</span>
                                 <span class="gauge-val" id="val-happy">0.0%</span>
                             </div>
                             <div class="gauge-track">
@@ -143,7 +143,7 @@
                         <!-- Sad -->
                         <div class="gauge-row">
                             <div class="gauge-header">
-                                <span class="gauge-name"><span class="gauge-emoji">😢</span> Tristeza</span>
+                                <span class="gauge-name"><i class="fa-solid fa-face-sad-tear gauge-emoji"></i> Tristeza</span>
                                 <span class="gauge-val" id="val-sad">0.0%</span>
                             </div>
                             <div class="gauge-track">
@@ -154,7 +154,7 @@
                         <!-- Angry -->
                         <div class="gauge-row">
                             <div class="gauge-header">
-                                <span class="gauge-name"><span class="gauge-emoji">😠</span> Enojo</span>
+                                <span class="gauge-name"><i class="fa-solid fa-face-angry gauge-emoji"></i> Enojo</span>
                                 <span class="gauge-val" id="val-angry">0.0%</span>
                             </div>
                             <div class="gauge-track">
@@ -165,7 +165,7 @@
                         <!-- Surprise -->
                         <div class="gauge-row">
                             <div class="gauge-header">
-                                <span class="gauge-name"><span class="gauge-emoji">😮</span> Sorpresa</span>
+                                <span class="gauge-name"><i class="fa-solid fa-face-surprise gauge-emoji"></i> Sorpresa</span>
                                 <span class="gauge-val" id="val-surprise">0.0%</span>
                             </div>
                             <div class="gauge-track">
@@ -176,7 +176,7 @@
                         <!-- Fear -->
                         <div class="gauge-row">
                             <div class="gauge-header">
-                                <span class="gauge-name"><span class="gauge-emoji">😨</span> Miedo</span>
+                                <span class="gauge-name"><i class="fa-solid fa-face-flushed gauge-emoji"></i> Miedo</span>
                                 <span class="gauge-val" id="val-fear">0.0%</span>
                             </div>
                             <div class="gauge-track">
@@ -187,7 +187,7 @@
                         <!-- Disgust -->
                         <div class="gauge-row">
                             <div class="gauge-header">
-                                <span class="gauge-name"><span class="gauge-emoji">🤢</span> Disgusto</span>
+                                <span class="gauge-name"><i class="fa-solid fa-face-dizzy gauge-emoji"></i> Disgusto</span>
                                 <span class="gauge-val" id="val-disgust">0.0%</span>
                             </div>
                             <div class="gauge-track">
@@ -198,7 +198,7 @@
                         <!-- Neutral -->
                         <div class="gauge-row">
                             <div class="gauge-header">
-                                <span class="gauge-name"><span class="gauge-emoji">😐</span> Neutral</span>
+                                <span class="gauge-name"><i class="fa-solid fa-face-meh gauge-emoji"></i> Neutral</span>
                                 <span class="gauge-val" id="val-neutral">0.0%</span>
                             </div>
                             <div class="gauge-track">
@@ -213,8 +213,8 @@
                     <div class="edu-title">
                         <h3><i class="fa-solid fa-graduation-cap"></i> Bajo el Capó</h3>
                         <div class="edu-nav">
-                            <button class="edu-tab-btn active" onclick="switchEduTab('cnn')">Capas CNN</button>
-                            <button class="edu-tab-btn" onclick="switchEduTab('softmax')">Softmax Math</button>
+                            <button class="edu-tab-btn active" onclick="switchEduTab('cnn', this)">Capas CNN</button>
+                            <button class="edu-tab-btn" onclick="switchEduTab('softmax', this)">Softmax Math</button>
                         </div>
                     </div>
 
@@ -228,14 +228,14 @@
 
                     <!-- Contenido pestaña Softmax -->
                     <div class="edu-content" id="edu-softmax">
-                        <p>La capa de salida de la red neuronal utiliza la función de activación **Softmax** para convertir puntuaciones arbitrarias en probabilidades:</p>
+                        <p>La capa de salida de la red neuronal utiliza la función de activación <strong>Softmax</strong> para convertir puntuaciones arbitrarias en probabilidades:</p>
                         
                         <div class="formula-block">
                             σ(z)_i = e^(z_i) / Σ(e^(z_j))
                         </div>
 
-                        <p>Esta fórmula toma las intensidades puras de salida (valores exponenciales) y las normaliza para asegurar que la probabilidad de todas las emociones **sume exactamente el 100%**.</p>
-                        <p>El valor más alto se convierte en tu **emoción dominante**.</p>
+                        <p>Esta fórmula toma las intensidades puras de salida (valores exponenciales) y las normaliza para asegurar que la probabilidad de todas las emociones <strong>sume exactamente el 100%</strong>.</p>
+                        <p>El valor más alto se convierte en tu <strong>emoción dominante</strong>.</p>
                     </div>
                 </div>
 
@@ -275,6 +275,10 @@
                 });
                 video.srcObject = stream;
                 isCamActive = true;
+                isUsingFile = false;
+                document.getElementById('videoElement').style.display = 'block';
+                document.getElementById('scanOverlay').style.display = 'block';
+                document.getElementById('fallbackImgElement').style.display = 'none';
                 statusText.innerText = "Cámara Activa";
                 document.getElementById('btnToggleCam').innerHTML = `<i class="fa-solid fa-video"></i>`;
                 document.getElementById('btnToggleCam').className = "btn btn-secondary";
@@ -331,7 +335,6 @@
             reader.onload = function(e) {
                 selectedFileBase64 = e.target.result;
                 
-                // Actualizar interfaz a modo archivo
                 activateFileMode();
                 const fallbackImg = document.getElementById('fallbackImgElement');
                 fallbackImg.src = selectedFileBase64;
@@ -377,11 +380,10 @@
                 imageData = captureFrame();
             }
 
-            // Cambiar estados visuales de carga
             isProcessing = true;
             btn.disabled = true;
             btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Analizando...`;
-            faceBox.style.display = 'none'; // Ocultar mientras reprocesa
+            faceBox.style.display = 'none';
 
             try {
                 const response = await fetch('/api/analyze-mood', {
@@ -396,7 +398,6 @@
                     showNotification("Análisis completado con éxito.", "success");
                     displayResults(data);
                     
-                    // Agregar registro al historial
                     moodHistory.push({
                         emotion: data.dominant_emotion,
                         scores: data.emotions,
@@ -410,7 +411,7 @@
                 }
             } catch (err) {
                 console.error("Error en conexión de red:", err);
-                showNotification("No se pudo conectar con el servidor de IA. Asegúrate de iniciar start.sh", "error");
+                showNotification("No se pudo conectar con el servidor de IA. Asegúrate de que el servidor FastAPI esté activo.", "error");
                 triggerShakeEffect();
             } finally {
                 isProcessing = false;
@@ -421,15 +422,14 @@
 
         // Renderizar los Resultados en la Interfaz
         function displayResults(data) {
-            // Actualizar métricas rápidas
             const mappingNombres = {
-                "happy": "😃 Feliz",
-                "sad": "😢 Triste",
-                "angry": "😠 Enojado",
-                "surprise": "😮 Sorprendido",
-                "fear": "😨 Asustado",
-                "disgust": "🤢 Disgustado",
-                "neutral": "😐 Neutral"
+                "happy": "Feliz",
+                "sad": "Triste",
+                "angry": "Enojado",
+                "surprise": "Sorprendido",
+                "fear": "Asustado",
+                "disgust": "Disgustado",
+                "neutral": "Neutral"
             };
 
             const dominantColorMap = {
@@ -449,7 +449,6 @@
 
             document.getElementById('statTime').innerText = data.inference_time_seconds + "s";
 
-            // Actualizar gauges individuales
             for (let emotion in data.emotions) {
                 const val = data.emotions[emotion];
                 const textEl = document.getElementById(`val-${emotion}`);
@@ -461,7 +460,6 @@
                 }
             }
 
-            // Dibujar recuadro de la cara
             renderFaceBox(data.box);
         }
 
@@ -470,24 +468,19 @@
             const viewport = document.querySelector('.media-viewport');
             const faceBox = document.getElementById('faceBox');
             
-            // Dimensiones físicas del contenedor
             const containerW = viewport.clientWidth;
             const containerH = viewport.clientHeight;
 
-            // Dimensiones lógicas de la captura (640x480)
             const logicalW = 640;
             const logicalH = 480;
 
-            // Factores de escala
             const scaleX = containerW / logicalW;
             const scaleY = containerH / logicalH;
 
-            // Calcular y pintar
             faceBox.style.width = (box.w * scaleX) + 'px';
             faceBox.style.height = (box.h * scaleY) + 'px';
             faceBox.style.top = (box.y * scaleY) + 'px';
 
-            // Si la cámara está activa, recordamos que la vista está en modo espejo (espejada)
             if (!isUsingFile) {
                 const xCalculado = containerW - (box.x * scaleX) - (box.w * scaleX);
                 faceBox.style.left = xCalculado + 'px';
@@ -505,7 +498,6 @@
         let ctx = canvas.getContext('2d');
 
         function setupTimelineChart() {
-            // Ajustar resolución lógica para pantallas Retina
             const rect = canvas.getBoundingClientRect();
             canvas.width = rect.width * window.devicePixelRatio;
             canvas.height = rect.height * window.devicePixelRatio;
@@ -513,7 +505,6 @@
             drawEmptyTimeline();
         }
 
-        // Escucha cambios de tamaño de pantalla para redibujar el canvas de forma fluida
         window.addEventListener('resize', () => {
             const rect = canvas.getBoundingClientRect();
             canvas.width = rect.width * window.devicePixelRatio;
@@ -524,7 +515,6 @@
 
         function drawEmptyTimeline() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // Dibujar rejilla horizontal suave de fondo
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.02)';
             ctx.lineWidth = 1;
             
@@ -559,7 +549,6 @@
 
             ctx.clearRect(0, 0, w, h);
 
-            // Rejilla de fondo
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
             ctx.lineWidth = 1;
             for (let i = 1; i < 4; i++) {
@@ -570,7 +559,6 @@
                 ctx.stroke();
             }
 
-            // Mapeo vertical de emociones a alturas (Feliz en la cima, Enojo abajo)
             const verticalMap = {
                 "happy": 0.15,
                 "surprise": 0.3,
@@ -582,33 +570,29 @@
             };
 
             const dominantColorMap = {
-                "happy": "#10b981",    // Verde
-                "surprise": "#f59e0b", // Ámbar
-                "neutral": "#9ca3af",  // Gris
-                "fear": "#8b5cf6",     // Violeta
-                "sad": "#3b82f6",      // Azul
-                "disgust": "#d946ef",  // Rosa
-                "angry": "#f43f5e"     // Rojo
+                "happy": "#10b981",
+                "surprise": "#f59e0b",
+                "neutral": "#9ca3af",
+                "fear": "#8b5cf6",
+                "sad": "#3b82f6",
+                "disgust": "#d946ef",
+                "angry": "#f43f5e"
             };
 
-            // Dibujar Línea de Historial
             if (moodHistory.length > 1) {
                 ctx.beginPath();
                 ctx.lineWidth = 3;
                 
-                // Crear Gradiente Lineal para la curva
                 const grad = ctx.createLinearGradient(0, 0, w, 0);
                 moodHistory.forEach((pt, idx) => {
                     const x = (w / (moodHistory.length - 1)) * idx;
                     const color = dominantColorMap[pt.emotion] || "#fff";
-                    // Asegurar interpolación del color en el gradiente
                     const step = idx / (moodHistory.length - 1);
                     grad.addColorStop(Math.min(Math.max(step, 0), 1), color);
                 });
                 
                 ctx.strokeStyle = grad;
 
-                // Trazar Curva Bezier Suave
                 moodHistory.forEach((pt, idx) => {
                     const x = (w / (moodHistory.length - 1)) * idx;
                     const y = h * (verticalMap[pt.emotion] || 0.5);
@@ -619,7 +603,6 @@
                         const prevX = (w / (moodHistory.length - 1)) * (idx - 1);
                         const prevY = h * (verticalMap[moodHistory[idx - 1].emotion] || 0.5);
                         
-                        // Puntos de control para suavizado
                         const cpX1 = prevX + (x - prevX) / 2;
                         const cpY1 = prevY;
                         const cpX2 = prevX + (x - prevX) / 2;
@@ -631,43 +614,40 @@
                 ctx.stroke();
             }
 
-            // Dibujar Puntos de Nodo (Dots)
             moodHistory.forEach((pt, idx) => {
                 const x = moodHistory.length === 1 ? w / 2 : (w / (moodHistory.length - 1)) * idx;
                 const y = h * (verticalMap[pt.emotion] || 0.5);
                 const color = dominantColorMap[pt.emotion] || "#fff";
 
-                // Sombra Neón
                 ctx.shadowColor = color;
                 ctx.shadowBlur = 8;
 
-                // Anillo exterior blanco
                 ctx.fillStyle = "#ffffff";
                 ctx.beginPath();
                 ctx.arc(x, y, 6, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Centro del color de la emoción
                 ctx.fillStyle = color;
                 ctx.beginPath();
                 ctx.arc(x, y, 4, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Restablecer sombra
                 ctx.shadowBlur = 0;
             });
         }
 
         // Alternar Pestañas del Explainer Didáctico
-        function switchEduTab(tab) {
+        function switchEduTab(tab, btnElement) {
             document.querySelectorAll('.edu-tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.edu-content').forEach(c => c.classList.remove('active'));
 
+            if (btnElement) {
+                btnElement.classList.add('active');
+            }
+
             if (tab === 'cnn') {
-                event.target.classList.add('active');
                 document.getElementById('edu-cnn').classList.add('active');
             } else {
-                event.target.classList.add('active');
                 document.getElementById('edu-softmax').classList.add('active');
             }
         }
